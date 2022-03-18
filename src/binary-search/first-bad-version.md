@@ -8,9 +8,9 @@
 
 You are a product manager and currently leading a team to develop a new product. Unfortunately, the latest version of your product fails the quality check. Since each version is developed based on the previous version, all the versions after a bad version are also bad.
 
-Suppose you have n versions [1, 2, ..., n] and you want to find out the first bad one, which causes all the following ones to be bad.
+Suppose you have `n` versions `[1, 2, ..., n]` and you want to find out the first bad one, which causes all the following ones to be bad.
 
-You are given an API bool *isBadVersion(version)* which returns whether version is bad. Implement a function to find the first bad version. You should minimize the number of calls to the API.
+You are given an API bool `isBadVersion(version)` which returns whether version is bad. Implement a function to find the first bad version. You should minimize the number of calls to the API.
 
 ### Example 1:
 
@@ -31,6 +31,10 @@ Input: n = 1, bad = 1
 Output: 1
 ```
 
+### Constraints:
+
+* `1 <= bad <= n <= 231 - 1`
+
 ---
 
 ## Solution
@@ -40,13 +44,13 @@ Output: 1
 public class Solution extends VersionControl {
     public int firstBadVersion(int n) {
         int low = 1, high = n, versionIdx = 0;
-        while(low <= high) {
+        while (low <= high) {
             int mid = low + (high-low)/2;
             if (isBadVersion(mid)) {
                 versionIdx = mid;
-                high = mid-1;
+                high = mid - 1;
             } else {
-                low = mid+1;
+                low = mid + 1;
             }
         }
         return versionIdx;
@@ -58,7 +62,7 @@ public class Solution extends VersionControl {
 
 ## Explanation
 
-The problem is asking us to find the first bad version of a product out of `n` versions with minimal calls to the `isBadVersion` api. This can be generalized as find minimum value in sorted array that meets specific a condition, the condition being the value is a bad version.
+The problem is asking us to find the first bad version of a product out of `n` versions with minimal calls to the `isBadVersion` api. This can be generalized as find the minimum value in sorted array that meets specific a condition, the condition being the value is a bad version.
 
 ### Linear Approach
 
@@ -69,12 +73,12 @@ We can solve this problem with a linear approach.
     - return i
 ```
 
-This approach has a time complexity of O(n) as the latest / last version might be first bad version and it will take N iterations. Also this approach does not minimize api calls as it makes N api calls.
+This approach has a time complexity of O(n) as the latest / last version can be first bad version and it will take N iterations. Also this approach does not minimize api calls as it makes N api calls.
 
 ### Binary Search
 
-Using binary search we can take advantage of the fact that the array is sorted i.e each new version is greater than the next.  
-Binary search reduces the search space with each iteration, this also minimizes the number of api calls.
+We can take advantage of the fact that the array is sorted i.e each new version is greater than the previous.  
+Using binary search we can reduce the search space with each iteration, this also minimizes the number of api calls.
 
 ```java
 int low = 1, high = n, versionIdx = 0;
@@ -87,7 +91,7 @@ while(low<=high) {
     int mid = low + (high-low)/2;
 ```
 * Now we begin the while loop for the binary search with condition being the lower bound variable `low` is less than or equal to higher bound variable `high`. 
-* Next, we calculate the `mid` value using `low + (high-low)/2` to avoid overflow ensuring its within array bounds.
+* Next, we calculate the `mid` value using `low + (high-low)/2` to avoid overflow and ensure its within array bounds.
 
 ```java
 if (isBadVersion(mid)) {
@@ -96,9 +100,9 @@ if (isBadVersion(mid)) {
 }
 ```
 * We check if the `mid` version is a bad version.
-* If yes, we know that it can either be the first bad version or there are bad versions before it.
+* If yes, we know that it is either the first bad version or there are bad versions before it.
 * So, we update the `versionIdx` value to `mid`.
-* We reduce the search space by setting `high = mid-1`, we're setting it to `mid-1` as we already know mid is a bad version. In the next iteration we'll only be search the versions earlier than `mid`.
+* We reduce the search space by setting `high = mid-1`, we're setting it to `mid-1` as we already know mid is a bad version. In the next iteration we'll only be search versions older than `mid`.
 
 ```java
 } else {
@@ -106,12 +110,12 @@ if (isBadVersion(mid)) {
 }
 ```
 * If `mid` isn't a bad version, we know the first bad version is a newer version than `mid`.
-* So, we reduce the search space part by setting `low = mid+1` and search only the versions newer than `mid`.
+* So, we reduce the search space part by setting `low = mid+1` and search versions newer than `mid`.
 
 ```java
 return versionIdx;
 ```
-* The while loop exits when `low <= high` aka `low` and `high` pointers have overlapped, we know that we've narrowed down and exhausted the search space.
+* The while loop exits when `low <= high` meaning we've narrowed down and exhausted the search space.
 * We then return `versionIdx` which contains the minimum or first bad version.
 
 This approach takes O(log n) time as we halve the search space with each iteration, and it takes O(1) space as we have used only variables which take constant space.
